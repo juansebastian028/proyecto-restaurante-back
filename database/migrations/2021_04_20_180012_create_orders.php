@@ -15,9 +15,9 @@ class CreateOrders extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('shopping_cart_id');
+            $table->unsignedBigInteger('shopping_cart_id')->nullable();
             $table->foreign('shopping_cart_id')->references('id')->on('shopping_cart');
             $table->string('address');
             $table->string('phone_number');

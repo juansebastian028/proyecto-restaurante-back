@@ -15,8 +15,8 @@ class CreateModifiersModifiersGroups extends Migration
     {
         Schema::create('modifiers_modifiers_groups', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('modifier_id');
-            $table->unsignedBigInteger('modifier_group_id');
+            $table->unsignedBigInteger('modifier_id')->nullable();
+            $table->unsignedBigInteger('modifier_group_id')->nullable();
             $table->foreign('modifier_id')->references('id')->on('modifiers');
             $table->foreign('modifier_group_id')->references('id')->on('modifier_groups');
             $table->timestamps();

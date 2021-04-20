@@ -15,7 +15,7 @@ class CreateShoppingCart extends Migration
     {
         Schema::create('shopping_cart', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products');
             $table->integer('unit_price');
             $table->integer('quantity');

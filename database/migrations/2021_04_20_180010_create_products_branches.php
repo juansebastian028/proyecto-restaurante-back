@@ -15,8 +15,8 @@ class CreateProductsBranches extends Migration
     {
         Schema::create('products_branches', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('branch_office_id');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('branch_office_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products');
             $table->foreign('branch_office_id')->references('id')->on('branches');
             $table->string('state');

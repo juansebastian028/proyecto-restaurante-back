@@ -15,9 +15,9 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('profile_id');
+            $table->unsignedBigInteger('profile_id')->nullable();
             $table->foreign('profile_id')->references('id')->on('profiles');
-            $table->unsignedBigInteger('branch_office_id');
+            $table->unsignedBigInteger('branch_office_id')->nullable();
             $table->foreign('branch_office_id')->references('id')->on('branches');
             $table->string('name');
             $table->string('lastname');
