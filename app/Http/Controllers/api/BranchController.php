@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use Illuminate\Http\Request;
-use App\Models\City;
-use Illuminate\Support\Facades\DB;
 
-class CityController extends Controller
+class BranchController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +15,9 @@ class CityController extends Controller
      */
     public function index()
     {
-        // return City::all();
-        // return DB::select('SELECT * FROM Cities');
-        return City::select('id', 'name')->get();
+        return Branch::select("branches.id", "branches.name", "cities.name as nameCity")
+                            ->join('cities', 'branches.id', '=', 'cities.id')
+                            ->get();
     }
 
     /**

@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\api\BranchController;
+use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\CityController;
+use App\Http\Controllers\api\ModifierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +23,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('/cities', CityController::class);
+
+Route::resource('/categories', CategoryController::class);
+
+Route::resource('/modifiers', ModifierController::class);
+
+Route::resource('/branches', BranchController::class);

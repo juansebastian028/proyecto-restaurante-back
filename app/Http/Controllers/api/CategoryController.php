@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Models\City;
-use Illuminate\Support\Facades\DB;
 
-class CityController extends Controller
+class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +15,7 @@ class CityController extends Controller
      */
     public function index()
     {
-        // return City::all();
-        // return DB::select('SELECT * FROM Cities');
-        return City::select('id', 'name')->get();
+        return Category::select('id', 'name')->get();
     }
 
     /**
