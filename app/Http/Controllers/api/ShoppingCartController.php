@@ -1,12 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\api;
-
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class ShoppingCartController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return Category::select('id', 'name')->get();
+        //
     }
 
     /**
@@ -36,11 +35,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $category = Category::create([
-            'name' => $request->name
-        ]);
-
-        return response()->json($category, 201);
+        //
     }
 
     /**
@@ -74,16 +69,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Category::find($id);
-
-        if ($category === null) {
-
-            return [];
-        }
-
-        $category->update(['name' => $request->name]);
-
-        return response()->json($category, 200);
+        //
     }
 
     /**
@@ -94,14 +80,6 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::find($id);
-
-        if ($category === null) {
-
-            return [];
-        }
-        
-        $category->delete();
-        return response()->json('Category deleted successfully', 200);
+        //
     }
 }

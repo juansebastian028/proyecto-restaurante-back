@@ -21,6 +21,7 @@ class CreateOrders extends Migration
             $table->foreign('shopping_cart_id')->references('id')->on('shopping_cart');
             $table->string('address');
             $table->string('phone_number');
+            $table->longText('cancellation_description')->nullable();
             $table->string('state');
             $table->timestamps();
         });

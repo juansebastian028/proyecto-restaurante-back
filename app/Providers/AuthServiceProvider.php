@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
+use Laravel\Passport\Passport;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -24,7 +26,12 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        Passport::routes();
 
-        //
+        Passport::tokensCan([
+            'super_admin' => 'Add/Edit/Delete cities,categories,modifiers,branches',
+            'admin' => 'Add/Edit/Delete products',
+            'e-commerce' => 'List Products'
+        ]);
     }
 }

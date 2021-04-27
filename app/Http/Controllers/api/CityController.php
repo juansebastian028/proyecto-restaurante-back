@@ -36,7 +36,11 @@ class CityController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $city = City::create([
+            'name' => $request->name
+        ]);
+
+        return response()->json($city, 201);
     }
 
     /**
@@ -70,7 +74,16 @@ class CityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $city = City::find($id);
+
+        if ($city === null) {
+
+            return [];
+        }
+
+        $city->update(['name' => $request->name]);
+
+        return response()->json($city, 200);
     }
 
     /**
@@ -81,6 +94,14 @@ class CityController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $city = City::find($id);
+
+        if ($city === null) {
+
+            return [];
+        }
+        
+        $city->delete();
+        return response()->json('City deleted successfully', 200);
     }
 }
