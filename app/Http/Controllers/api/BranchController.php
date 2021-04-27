@@ -38,7 +38,12 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $branch = Branch::create([
+            'name' => $request->name,
+            'city_id' => $request->city_id
+        ]);
+
+        return response()->json($branch, 201);
     }
 
     /**
@@ -72,7 +77,19 @@ class BranchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $branch = Branch::find($id);
+
+        if ($branch === null) {
+
+            return [];
+        }
+
+        $branch->update([
+            'name' => $request->name,
+            'city_id' => $request->city_id
+        ]);
+
+        return response()->json($branch, 200);
     }
 
     /**
@@ -83,6 +100,14 @@ class BranchController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $branch = Branch::find($id);
+
+        if ($branch === null) {
+
+            return [];
+        }
+        
+        $branch->delete();
+        return response()->json('Branch deleted successfully', 200);
     }
 }

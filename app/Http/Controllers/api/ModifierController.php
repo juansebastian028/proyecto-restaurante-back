@@ -36,7 +36,12 @@ class ModifierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $modifier = Modifier::create([
+            'name' => $request->name,
+            'price' => $request->price
+        ]);
+
+        return response()->json($modifier, 201);
     }
 
     /**
@@ -70,7 +75,19 @@ class ModifierController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $modifier = Modifier::find($id);
+
+        if ($modifier === null) {
+
+            return [];
+        }
+
+        $modifier->update([
+            'name' => $request->name,
+            'price' => $request->price
+        ]);
+
+        return response()->json($modifier, 200);
     }
 
     /**
@@ -81,6 +98,14 @@ class ModifierController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $modifier = Modifier::find($id);
+
+        if ($modifier === null) {
+
+            return [];
+        }
+        
+        $modifier->delete();
+        return response()->json('Modifier deleted successfully', 200);
     }
 }

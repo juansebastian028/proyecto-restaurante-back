@@ -33,32 +33,29 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
     ->group(function() {
         Route::resource('/users', UserController::class);
         Route::resource('/cities', CityController::class);
-        Route::resource('/branches', BranchController::class);
-        Route::resource('/orders', OrderController::class);
         Route::resource('/shopping-cart', ShoppingCartController::class);
         Route::resource('/products/categories', CategoryController::class);
         Route::resource('/products/group-modifiers', GroupModifierController::class);
         Route::resource('/products/modifiers', ModifierController::class);
         Route::resource('/products', ProductController::class);
     });
-
-    Route::middleware(['scope:admin'])
+    
+    Route::middleware(['scope:admin,e-commerce'])
     ->group(function() {
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::put('/users/{id}', [UserController::class, 'update']);
-        Route::resource('/branches', BranchController::class);
-        Route::resource('/orders', OrderController::class);
         Route::resource('/shopping-cart', ShoppingCartController::class);
         Route::get('/products', [ProductController::class, 'index']);
     });
-
-    Route::middleware(['scope:e-commerce'])
+    
+    Route::middleware(['scope:super_admin,admin'])
     ->group(function() {
-        Route::get('/users/{id}', [UserController::class, 'show']);
-        Route::put('/users/{id}', [UserController::class, 'update']);
+        Route::resource('/branches', BranchController::class);
+    });
+
+    Route::middleware(['scope:super_admin,admin,e-commerce'])
+    ->group(function() {
         Route::resource('/orders', OrderController::class);
-        Route::resource('/shopping-cart', ShoppingCartController::class);
-        Route::get('/products', [ProductController::class, 'index']);
     });
 });
 
