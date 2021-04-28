@@ -8,7 +8,7 @@ use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\api\BranchController;
 use App\Http\Controllers\api\CityController;
 use App\Http\Controllers\api\CategoryController;
-use App\Http\Controllers\api\GroupModifierController;
+use App\Http\Controllers\api\ModifierGroupController;
 use App\Http\Controllers\api\ModifierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +35,7 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
         Route::resource('/cities', CityController::class);
         Route::resource('/shopping-cart', ShoppingCartController::class);
         Route::resource('/products/categories', CategoryController::class);
-        Route::resource('/products/group-modifiers', GroupModifierController::class);
+        Route::resource('/products/group-modifiers', ModifierGroupController::class);
         Route::resource('/products/modifiers', ModifierController::class);
         Route::resource('/products', ProductController::class);
     });
