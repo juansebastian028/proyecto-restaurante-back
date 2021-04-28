@@ -77,9 +77,12 @@ class ModifierController extends Controller
     {
         $modifier = Modifier::find($id);
 
-        if ($modifier === null) {
-
-            return [];
+        try {
+            $modifier = Modifier::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Modifier not found.'
+            ], 403);
         }
 
         $modifier->update([
@@ -100,12 +103,15 @@ class ModifierController extends Controller
     {
         $modifier = Modifier::find($id);
 
-        if ($modifier === null) {
-
-            return [];
+        try {
+            $modifier = Modifier::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Modifier not found.'
+            ], 403);
         }
         
         $modifier->delete();
-        return response()->json('Modifier deleted successfully', 200);
+        return response()->json(['message'=>'Modifier deleted successfully.'], 200);
     }
 }

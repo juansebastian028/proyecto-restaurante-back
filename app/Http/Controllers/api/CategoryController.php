@@ -75,10 +75,13 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         $category = Category::find($id);
-
-        if ($category === null) {
-
-            return [];
+   
+        try {
+            $category = Category::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Category not found.'
+            ], 403);
         }
 
         $category->update(['name' => $request->name]);
@@ -96,12 +99,15 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
 
-        if ($category === null) {
-
-            return [];
+        try {
+            $category = Category::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Category not found.'
+            ], 403);
         }
         
         $category->delete();
-        return response()->json('Category deleted successfully', 200);
+        return response()->json(['message'=>'Category deleted successfully.'], 200);
     }
 }

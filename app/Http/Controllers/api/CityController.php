@@ -76,9 +76,12 @@ class CityController extends Controller
     {
         $city = City::find($id);
 
-        if ($city === null) {
-
-            return [];
+        try {
+            $city = City::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'City not found.'
+            ], 403);
         }
 
         $city->update(['name' => $request->name]);
@@ -95,13 +98,16 @@ class CityController extends Controller
     public function destroy($id)
     {
         $city = City::find($id);
-
-        if ($city === null) {
-
-            return [];
+        
+        try {
+            $city = City::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'City not found.'
+            ], 403);
         }
         
         $city->delete();
-        return response()->json('City deleted successfully', 200);
+        return response()->json(['message'=>'City deleted successfully.'], 200);
     }
 }

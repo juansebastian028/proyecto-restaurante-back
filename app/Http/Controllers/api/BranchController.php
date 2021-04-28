@@ -79,9 +79,12 @@ class BranchController extends Controller
     {
         $branch = Branch::find($id);
 
-        if ($branch === null) {
-
-            return [];
+        try {
+            $branch = Branch::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Branch not found.'
+            ], 403);
         }
 
         $branch->update([
@@ -100,14 +103,16 @@ class BranchController extends Controller
      */
     public function destroy($id)
     {
-        $branch = Branch::find($id);
-
-        if ($branch === null) {
-
-            return [];
+        
+        try {
+            $branch = Branch::findOfFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Branch not found.'
+            ], 403);
         }
         
         $branch->delete();
-        return response()->json('Branch deleted successfully', 200);
+        return response()->json(['message'=>'Branch deleted successfully.'], 200);
     }
 }
