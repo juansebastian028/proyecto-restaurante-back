@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use App\Models\Modifier;
+use App\Models\ModifierGroup;
 use Illuminate\Http\Request;
 
 class ModifierController extends Controller
@@ -15,7 +18,13 @@ class ModifierController extends Controller
      */
     public function index()
     {
-        return Modifier::select('id', 'name', 'price')->get();
+        $modifier = Modifier::select('id', 'name', 'price')->with([
+            'ModifierGroup' => function ($query) {
+                $query->select('modifier_group_id');
+            }
+        ])->get();
+
+        echo(json_encode($modifier));
     }
 
     /**
@@ -40,6 +49,11 @@ class ModifierController extends Controller
             'name' => $request->name,
             'price' => $request->price
         ]);
+
+        foreach (json_decode($request->modifier_group) as $value){
+            $modifierGroupId = ModifierGroup::findOrFail($value); 
+            $modifier->modifierGroup()->attach($modifierGroupId);
+        }
 
         return response()->json($modifier, 201);
     }
@@ -75,10 +89,8 @@ class ModifierController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $modifier = Modifier::find($id);
-
         try {
-            $modifier = Modifier::findOfFail($id);
+            $modifier = Modifier::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Modifier not found.'
@@ -89,6 +101,14 @@ class ModifierController extends Controller
             'name' => $request->name,
             'price' => $request->price
         ]);
+
+        $modifier->modifierGroup()->sync(json_decode($request->modifier_group));
+
+        // foreach(json_decode($request->modifier_group) as $value){
+        //     $modifier->modifierGroup()->updateExistingPivot($id, [
+        //         "modifier_group_id" => $value
+        //     ]);
+        // }
 
         return response()->json($modifier, 200);
     }
@@ -104,14 +124,16 @@ class ModifierController extends Controller
         $modifier = Modifier::find($id);
 
         try {
-            $modifier = Modifier::findOfFail($id);
+            $modifier = Modifier::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Modifier not found.'
             ], 403);
         }
-        
+
+        $modifier->modifierGroup()->detach();
         $modifier->delete();
+
         return response()->json(['message'=>'Modifier deleted successfully.'], 200);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -77,7 +79,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
    
         try {
-            $category = Category::findOfFail($id);
+            $category = Category::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Category not found.'
@@ -100,7 +102,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         try {
-            $category = Category::findOfFail($id);
+            $category = Category::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Category not found.'

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use Illuminate\Http\Request;
 use App\Models\City;
 
@@ -77,7 +79,7 @@ class CityController extends Controller
         $city = City::find($id);
 
         try {
-            $city = City::findOfFail($id);
+            $city = City::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'City not found.'
@@ -100,7 +102,7 @@ class CityController extends Controller
         $city = City::find($id);
         
         try {
-            $city = City::findOfFail($id);
+            $city = City::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'City not found.'

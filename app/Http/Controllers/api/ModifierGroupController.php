@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use Illuminate\Http\Request;
 
@@ -16,8 +17,9 @@ class ModifierGroupController extends Controller
      */
     public function index()
     {
-        return ModifierGroup::select('id', 'name', 'selection_type', 'categories.name as category')
-        ->join('categories', 'modifier_groups.category_id', '=', 'categories.id');
+        return ModifierGroup::select('modifier_groups.id', 'modifier_groups.name', 'selection_type', 'categories.name as category')
+        ->join('categories', 'modifier_groups.category_id', '=', 'categories.id')
+        ->get();
     }
 
     /**
@@ -80,7 +82,7 @@ class ModifierGroupController extends Controller
     {
         
         try {
-            $modifierGroup = ModifierGroup::findOfFail($id);
+            $modifierGroup = ModifierGroup::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Modifier group not found.'
@@ -104,13 +106,11 @@ class ModifierGroupController extends Controller
      */
     public function destroy($id)
     {
-        $modifierGroup = ModifierGroup::find($id);
-
         try {
-            $modifierGroup = ModifierGroup::findOfFail($id);
+            $modifierGroup = ModifierGroup::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'Modifier not found.'
+                'message' => 'Modifier group not found.'
             ], 403);
         }
         

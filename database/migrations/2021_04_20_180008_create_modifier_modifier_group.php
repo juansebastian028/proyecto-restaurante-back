@@ -13,7 +13,7 @@ class CreateModifierModifierGroup extends Migration
      */
     public function up()
     {
-        Schema::create('modifiers_modifiers_groups', function (Blueprint $table) {
+        Schema::create('modifier_modifier_group', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('modifier_id')->nullable();
             $table->unsignedBigInteger('modifier_group_id')->nullable();
@@ -30,6 +30,6 @@ class CreateModifierModifierGroup extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('modifiers_modifiers_groups');
+        Schema::dropIfExists('modifier_modifier_group');
     }
 }

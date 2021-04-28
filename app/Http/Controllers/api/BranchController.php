@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use App\Models\Branch;
 use Illuminate\Http\Request;
 
@@ -80,7 +82,7 @@ class BranchController extends Controller
         $branch = Branch::find($id);
 
         try {
-            $branch = Branch::findOfFail($id);
+            $branch = Branch::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Branch not found.'
@@ -105,7 +107,7 @@ class BranchController extends Controller
     {
         
         try {
-            $branch = Branch::findOfFail($id);
+            $branch = Branch::findOrFail($id);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Branch not found.'
