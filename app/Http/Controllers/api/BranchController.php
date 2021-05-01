@@ -5,8 +5,9 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-use App\Models\Branch;
 use Illuminate\Http\Request;
+use App\Models\Branch;
+use App\Models\Product;
 
 class BranchController extends Controller
 {
@@ -116,5 +117,19 @@ class BranchController extends Controller
         
         $branch->delete();
         return response()->json(['message'=>'Branch deleted successfully.'], 200);
+    }
+
+    public function getProductsByBranch($id){
+        try {
+            $branch = Branch::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Branch not found.'
+            ], 403);
+        }
+
+        $products = $branch->products;
+
+        return response()->json($products, 200);
     }
 }

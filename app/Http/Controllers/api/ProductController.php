@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use Illuminate\Http\Request;
 
+use App\Models\Product;
+
+
 class ProductController extends Controller
 {
     /**
@@ -15,7 +18,15 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $product = Product::select('products.id', 'products.name', 'price','img','category_id','categories.name as category')
+        ->join('categories', 'products.category_id', '=', 'categories.id')
+        ->with([
+            'branch' => function ($query) {
+                $query->select('branch_office_id');
+            }
+        ])->get();
+        
+        return response()->json($product, 200);
     }
 
     /**
@@ -36,7 +47,15 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $product = Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'img' => $request->img,
+            'category_id' => $request->category_id
+        ]);
+        $product->branches()->attach(json_decode($request->branches_ids), array('state' => $request->state));
+
+        return response()->json($product, 200);
     }
 
     /**
@@ -69,8 +88,23 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        //
+    {   
+        try {
+            $product = Product::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Product not found.'
+            ], 403);
+        }
+
+        $product->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'img' => $request->img,
+            'category_id' => $request->category_id
+        ]);
+        
+        return response()->json($product, 200);
     }
 
     /**
@@ -81,6 +115,14 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $product = Product::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Product not found.'
+            ], 403);
+        }
+        $product->delete();
+        return response()->json(['message'=>'Product deleted successfully.'], 200);
     }
 }

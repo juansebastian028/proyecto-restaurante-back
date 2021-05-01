@@ -76,7 +76,6 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Category::find($id);
    
         try {
             $category = Category::findOrFail($id);
@@ -99,8 +98,6 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::find($id);
-
         try {
             $category = Category::findOrFail($id);
         } catch (ModelNotFoundException $e) {

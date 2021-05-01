@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+
 use App\Models\Profile;
+use App\Models\Branch;
 
 class User extends Authenticatable
 {
@@ -25,6 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'profile_id',
+        'branch_office_id'
     ];
 
     /**
@@ -48,5 +51,13 @@ class User extends Authenticatable
 
     public function profile(){
         return $this->belongsTo(Profile::class);
+    }
+
+    public function branch(){
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function order(){
+        return $this->hasMany(Order::class);
     }
 }

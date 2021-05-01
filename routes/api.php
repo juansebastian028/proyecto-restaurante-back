@@ -45,12 +45,12 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::put('/users/{id}', [UserController::class, 'update']);
         Route::resource('/shopping-cart', ShoppingCartController::class);
-        Route::get('/products', [ProductController::class, 'index']);
     });
     
     Route::middleware(['scope:super_admin,admin'])
     ->group(function() {
         Route::resource('/branches', BranchController::class);
+        Route::get('/branches/productsByBrach/{id}', [BranchController::class, 'getProductsByBranch']);
     });
 
     Route::middleware(['scope:super_admin,admin,e-commerce'])
@@ -58,6 +58,11 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
         Route::resource('/orders', OrderController::class);
     });
 });
+
+Route::get('/products/group-modifiers', [ModifierGroupController::class, 'index']);
+Route::get('/products/modifiers', [ModifierController::class, 'index']);
+Route::get('/products/categories', [CategoryController::class, 'index']);
+Route::get('/products', [ProductController::class, 'index']);
 
 
 

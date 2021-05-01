@@ -13,12 +13,12 @@ class CreateShoppingCartModifier extends Migration
      */
     public function up()
     {
-        Schema::create('shopping_cart_modifiers', function (Blueprint $table) {
+        Schema::create('shopping_cart_modifier', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('shopping_cart_id')->nullable();
             $table->unsignedBigInteger('modifiers_id')->nullable();
-            $table->foreign('shopping_cart_id')->references('id')->on('shopping_cart');
-            $table->foreign('modifiers_id')->references('id')->on('modifiers');
+            $table->foreign('shopping_cart_id')->references('id')->on('shopping_cart')->onDelete('cascade');
+            $table->foreign('modifiers_id')->references('id')->on('modifiers')->onDelete('cascade');
             $table->integer('unit_price_modifier');
             $table->timestamps();
         });

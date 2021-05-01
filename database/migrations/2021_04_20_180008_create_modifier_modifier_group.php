@@ -17,8 +17,8 @@ class CreateModifierModifierGroup extends Migration
             $table->id();
             $table->unsignedBigInteger('modifier_id')->nullable();
             $table->unsignedBigInteger('modifier_group_id')->nullable();
-            $table->foreign('modifier_id')->references('id')->on('modifiers');
-            $table->foreign('modifier_group_id')->references('id')->on('modifier_groups');
+            $table->foreign('modifier_id')->references('id')->on('modifiers')->onDelete('cascade');
+            $table->foreign('modifier_group_id')->references('id')->on('modifier_groups')->onDelete('cascade');
             $table->timestamps();
         });
     }

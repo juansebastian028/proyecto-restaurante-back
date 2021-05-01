@@ -19,12 +19,12 @@ class ModifierController extends Controller
     public function index()
     {
         $modifier = Modifier::select('id', 'name', 'price')->with([
-            'ModifierGroup' => function ($query) {
+            'modifierGroup' => function ($query) {
                 $query->select('modifier_group_id');
             }
         ])->get();
-
-        echo(json_encode($modifier));
+        
+        return response()->json($modifier, 200);
     }
 
     /**
@@ -50,10 +50,7 @@ class ModifierController extends Controller
             'price' => $request->price
         ]);
 
-        foreach (json_decode($request->modifier_group) as $value){
-            $modifierGroupId = ModifierGroup::findOrFail($value); 
-            $modifier->modifierGroup()->attach($modifierGroupId);
-        }
+        $modifier->modifierGroup()->attach(json_decode($request->modifier_group));
 
         return response()->json($modifier, 201);
     }
@@ -102,13 +99,7 @@ class ModifierController extends Controller
             'price' => $request->price
         ]);
 
-        $modifier->modifierGroup()->sync(json_decode($request->modifier_group));
-
-        // foreach(json_decode($request->modifier_group) as $value){
-        //     $modifier->modifierGroup()->updateExistingPivot($id, [
-        //         "modifier_group_id" => $value
-        //     ]);
-        // }
+        $modifier->modifierGroup()->sync(json_decode($request->modifier_group_ids));
 
         return response()->json($modifier, 200);
     }
@@ -121,8 +112,6 @@ class ModifierController extends Controller
      */
     public function destroy($id)
     {
-        $modifier = Modifier::find($id);
-
         try {
             $modifier = Modifier::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -131,7 +120,6 @@ class ModifierController extends Controller
             ], 403);
         }
 
-        $modifier->modifierGroup()->detach();
         $modifier->delete();
 
         return response()->json(['message'=>'Modifier deleted successfully.'], 200);

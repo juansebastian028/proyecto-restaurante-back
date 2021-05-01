@@ -44,7 +44,7 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception){
         if ($exception instanceof MissingScopeException){
             return response()->json([
-                'message' => 'You are not authorized to access this area'
+                'message' => 'You are not authorized to access this area.'
             ]);
         }
         return parent::render($request, $exception);

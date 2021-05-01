@@ -76,7 +76,6 @@ class CityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $city = City::find($id);
 
         try {
             $city = City::findOrFail($id);
@@ -99,8 +98,6 @@ class CityController extends Controller
      */
     public function destroy($id)
     {
-        $city = City::find($id);
-        
         try {
             $city = City::findOrFail($id);
         } catch (ModelNotFoundException $e) {
