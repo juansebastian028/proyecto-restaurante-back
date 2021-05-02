@@ -103,7 +103,12 @@ class ProductController extends Controller
             'img' => $request->img,
             'category_id' => $request->category_id
         ]);
-        
+
+        $product
+        ->branches()
+        ->newPivotStatement()
+        ->where('id', $product->id)->update(['branch_office_id' => $request->branch_office_id, 'state' => $request->state]);
+
         return response()->json($product, 200);
     }
 
