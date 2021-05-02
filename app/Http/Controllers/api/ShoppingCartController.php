@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use Illuminate\Http\Request;
 
+use App\Models\ShoppingCart;
+
 class ShoppingCartController extends Controller
 {
     /**
@@ -25,7 +27,7 @@ class ShoppingCartController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -36,7 +38,16 @@ class ShoppingCartController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $shoppingCart = ShoppingCart::create([
+            'product_id' => $request->product_id,
+            'unit_price' => $request->unit_price,
+            'quantity' => $request->quantity,
+            'total' => $request->total
+        ]);
+
+        $shoppingCart->modifiers()->attach(json_decode($request->modifiers, true));
+
+        return response()->json($shoppingCart, 200);
     }
 
     /**

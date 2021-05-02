@@ -12,6 +12,9 @@ use App\Models\User;
 class Branch extends Model
 {
     use HasFactory;
+
+    protected $hidden = array('pivot');
+    
     protected $fillable = [
         'name',
         'city_id'

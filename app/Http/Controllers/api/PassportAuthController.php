@@ -11,15 +11,6 @@ use App\Models\Profile;
 class PassportAuthController extends Controller
 {
     public function register(Request $request){
-        $this->validate($request, [
-            'name'=> 'required',
-            'lastname'=> 'required',
-            'username'=> 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'profile_id'=> 'required'
-        ]);
-
         $user = User::create([
             'name'=> $request->name,
             'lastname'=> $request->lastname,
@@ -27,33 +18,27 @@ class PassportAuthController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'profile_id' => $request->profile_id,
+            'branch_office_id' => $request->branch_office_id,
         ]);
 
-        $token = $user->createToken('ColombianRestaurant')->accessToken;
+        $token = $this->createToken($user);
 
-        return response()->json(['token' => $token], 200);
+        return response()->json([
+            'token' => $token->accessToken
+        ]);
     }
 
     public function login(Request $request){
 
         $data = $request->all();
-        $this->validate($request, [
-            'username' => 'required',
-            'password' => 'required',
-        ]);
   
         $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         if(Auth::attempt( [$fieldType=>$data['username'], 'password' => $data['password']] )){
             
             $user = Auth::user();
-            $userProfile = $user->profile()->first();
-              
-            if ($userProfile) {
-                $this->scope = $userProfile->type;
-            }
-
-            $token = $user->createToken($user->email.'-'.now(), [$this->scope]);
+            
+            $token = $this->createToken($user);
 
             return response()->json([
                 'token' => $token->accessToken
@@ -61,5 +46,15 @@ class PassportAuthController extends Controller
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
         }
+    }
+
+    public function createToken($user){
+        $userProfile = $user->profile()->first();
+              
+        if ($userProfile) {
+            $this->scope = $userProfile->type;
+        }
+
+        return $user->createToken($user->email.'-'.now(), [$this->scope]);
     }
 }
