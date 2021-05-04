@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ModifierGroup;
+use App\Models\ShoppingCart;
 
 class Modifier extends Model
 {
@@ -16,5 +17,9 @@ class Modifier extends Model
 
     public function modifierGroup(){
         return $this->belongsToMany(ModifierGroup::class);
+    }
+
+    public function shoppingCart(){
+        return $this->belongsToMany(ShoppingCart::class);
     }
 }

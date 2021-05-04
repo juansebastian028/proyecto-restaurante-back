@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 
 
+use Illuminate\Support\Facades\DB;
+
+
 class ProductController extends Controller
 {
     /**
@@ -21,7 +24,7 @@ class ProductController extends Controller
         $product = Product::select('products.id', 'products.name', 'price','img','category_id','categories.name as category')
         ->join('categories', 'products.category_id', '=', 'categories.id')
         ->with([
-            'branch' => function ($query) {
+            'branches' => function ($query) {
                 $query->select('branch_office_id');
             }
         ])->get();
@@ -53,7 +56,8 @@ class ProductController extends Controller
             'img' => $request->img,
             'category_id' => $request->category_id
         ]);
-        $product->branches()->attach(json_decode($request->branches_ids), array('state' => $request->state));
+
+        $product->branches()->attach(json_decode($request->branches_ids), array('state' => 'I'));
 
         return response()->json($product, 200);
     }
@@ -104,10 +108,30 @@ class ProductController extends Controller
             'category_id' => $request->category_id
         ]);
 
-        $product
-        ->branches()
-        ->newPivotStatement()
-        ->where('id', $product->id)->update(['branch_office_id' => $request->branch_office_id, 'state' => $request->state]);
+        $product->branches()->where('state', 'I')->delete();
+
+        $branches = $product->branches()->get();
+
+        $branches_ids = json_decode($request->branches_ids);
+
+        for($i = 0; $i < count($branches_ids); $i++){
+            $flag = false;
+            for($j = 0; $j < count($branches); $j++){
+                if($branches_ids[$i] == $branches[$j]->pivot->branch_office_id){
+                    $flag = true;
+                }
+            }
+            if(!$flag){
+                DB::table('product_branch')->insert([
+                    'product_id' =>  $product->id, 
+                    'branch_office_id' => $branches_ids[$i], 
+                    'state' => 'I'
+                ]);
+                // $product
+                // ->branches()
+                // ->insert(array('product_id' =>  $product->id, 'branch_office_id' => $branches_ids[$i], 'state' => 'I'));
+            }
+        }
 
         return response()->json($product, 200);
     }

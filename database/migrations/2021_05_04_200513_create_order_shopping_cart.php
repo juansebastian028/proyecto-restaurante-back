@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShoppingCartModifier extends Migration
+class CreateOrderShoppingCart extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateShoppingCartModifier extends Migration
      */
     public function up()
     {
-        Schema::create('shopping_cart_modifier', function (Blueprint $table) {
+        Schema::create('order_shopping_cart', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('order_id')->nullable();
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->unsignedBigInteger('shopping_cart_id')->nullable();
             $table->foreign('shopping_cart_id')->references('id')->on('shopping_cart')->onDelete('cascade');
-            $table->unsignedBigInteger('modifiers_id')->nullable();
-            $table->foreign('modifiers_id')->references('id')->on('modifiers')->onDelete('cascade');
-            $table->integer('unit_price_modifier');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ class CreateShoppingCartModifier extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shopping_cart_modifiers');
+        Schema::dropIfExists('order_shopping_cart');
     }
 }

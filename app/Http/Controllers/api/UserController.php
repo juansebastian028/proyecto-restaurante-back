@@ -5,9 +5,19 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Rules\MatchOldPassword;
+use Illuminate\Support\Facades\Hash;
+
+use App\Models\User;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        //
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +25,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        return User::select("users.id", "users.name", "lastname", "username", "email", "profile_id", "profiles.type as profile", "branch_office_id", "branches.name as branch")
+                            ->leftJoin('profiles', 'users.profile_id', '=', 'profiles.id')
+                            ->leftJoin('branches', 'users.branch_office_id', '=', 'branches.id')
+                            ->get();
     }
 
     /**
@@ -36,6 +49,17 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $user = User::create([
+            'name'=> $request->name,
+            'lastname'=> $request->lastname,
+            'username'=> $request->username,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'profile_id' => $request->profile_id,
+            'branch_office_id' => $request->branch_office_id,
+        ]);
+
+        return response()->json($user, 201);
     }
 
     /**
@@ -69,7 +93,30 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $user = User::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'User not found.'
+            ], 403);
+        }
+
+        if(!empty($request->password)){
+            if (!Hash::check($request->password, $user->password)) {
+                User::find($user->id)->update(['password'=> bcrypt($request->password)]);
+            }
+        }
+
+        $user->update([
+            'name'=> $request->name,
+            'lastname'=> $request->lastname,
+            'username'=> $request->username,
+            'email' => $request->email,
+            'profile_id' => $request->profile_id,
+            'branch_office_id' => $request->branch_office_id,
+        ]);
+
+        return response()->json($user, 200);
     }
 
     /**
@@ -80,6 +127,15 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $user = User::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'User not found.'
+            ], 403);
+        }
+        
+        $user->delete();
+        return response()->json(['message'=>'User deleted successfully.'], 200);
     }
 }

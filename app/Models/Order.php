@@ -16,15 +16,9 @@ class Order extends Model
         'phone_number',
         'cancellation_description',
         'state',
-        'user_id',
-        'shopping_cart_id'
     ];
-
-    public function user(){
-        return $this->belongsTo(User::class);
-    }
-
+    
     public function shoppingCart(){
-        return $this->belongsTo(ShoppingCart::class);
+        return $this->belongsToMany(ShoppingCart::class);
     }
 }
