@@ -19,7 +19,7 @@ class CreateProductBranch extends Migration
             $table->unsignedBigInteger('branch_office_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('branch_office_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->string('state');
+            $table->char('state', 1);
             $table->timestamps();
         });
     }

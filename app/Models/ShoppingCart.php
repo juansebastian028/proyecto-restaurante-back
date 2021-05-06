@@ -17,9 +17,7 @@ class ShoppingCart extends Model
     protected $table = "shopping_cart";
 
     protected $fillable = [
-        'unit_price',
         'quantity',
-        'total',
         'product_id',
         'user_id'
     ];
@@ -33,11 +31,7 @@ class ShoppingCart extends Model
     }
 
     public function modifiers(){
-        return $this->belongsToMany(Modifier::class, 'shopping_cart_modifier', 'shopping_cart_id', 'modifiers_id')
-        ->withPivot('unit_price_modifier');
-    }
-
-    public function order(){
-        return $this->belongsToMany(Order::class, 'order_shopping_cart', 'order_id', 'shopping_cart_id');
+        return $this->belongsToMany(Modifier::class, 'shopping_cart_modifier', 'shopping_cart_id', 'modifier_id')
+        ->withPivot('unit_price_modifier', 'order_product_id');
     }
 }

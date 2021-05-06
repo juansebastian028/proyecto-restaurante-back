@@ -15,10 +15,14 @@ class CreateOrders extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->unsignedBigInteger('branch_id')->nullable();
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
             $table->string('address');
             $table->string('phone_number');
             $table->longText('cancellation_description')->nullable();
-            $table->string('state');
+            $table->char('state', 1);
             $table->timestamps();
         });
     }

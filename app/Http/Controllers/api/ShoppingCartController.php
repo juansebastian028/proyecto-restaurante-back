@@ -40,9 +40,7 @@ class ShoppingCartController extends Controller
     public function store(Request $request)
     {
         $shoppingCart = ShoppingCart::create([
-            'unit_price' => $request->unit_price,
             'quantity' => $request->quantity,
-            'total' => $request->total,
             'product_id' => $request->product_id,
             'user_id' => $request->user_id
         ]);
@@ -71,7 +69,7 @@ class ShoppingCartController extends Controller
             ], 403);
         }
 
-        return ShoppingCart::select("shopping_cart.id","unit_price", "quantity","total", "products.name as product", "products.img as image")
+        return ShoppingCart::select("shopping_cart.id", "quantity", "products.name as product", "products.price as price", "products.img as image")
         ->join('products', 'shopping_cart.product_id', '=', 'products.id')->where('shopping_cart.user_id', '=', $id)
         ->get();
     }

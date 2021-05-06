@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
 use App\Models\Branch;
 use App\Models\ShoppingCart;
+use App\Models\Order;
 
 class Product extends Model
 {
@@ -31,5 +32,9 @@ class Product extends Model
 
     public function shoppingCart(){
         return $this->hasMany(ShoppingCart::class);
+    }
+
+    public function orders(){
+        return $this->belongsToMany(Order::class);
     }
 }

@@ -16,9 +16,19 @@ class Order extends Model
         'phone_number',
         'cancellation_description',
         'state',
+        'user_id',
     ];
     
     public function shoppingCart(){
         return $this->belongsToMany(ShoppingCart::class);
+    }
+
+    public function user(){
+        return $this->belongsToMany(User::class);
+    }
+
+    public function products(){
+        return $this->belongsToMany(Order::class,'order_product', 'order_id', 'product_id')
+        ->withPivot('quantity', 'unit_price', 'total', 'id');
     }
 }

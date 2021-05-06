@@ -61,6 +61,7 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
     ->group(function() {
         Route::resource('/orders', OrderController::class);
         Route::get('/orders/user/{id}', [OrderController::class, 'showByUser']);
+        Route::get('/orders/branch/{id}', [OrderController::class, 'showByBranch']);
     });
 });
 

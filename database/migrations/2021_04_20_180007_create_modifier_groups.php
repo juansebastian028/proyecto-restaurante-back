@@ -16,7 +16,7 @@ class CreateModifierGroups extends Migration
         Schema::create('modifier_groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('selection_type');
+            $table->char('selection_type', 1);
             $table->unsignedBigInteger('category_id')->nullable();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
             $table->timestamps();
