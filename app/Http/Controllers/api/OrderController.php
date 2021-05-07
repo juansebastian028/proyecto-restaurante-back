@@ -42,42 +42,45 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        // DB::beginTransaction();
-        $order = Order::create([
-            'user_id' => $request->user_id,
-            'address' => $request->address,
-            'phone_number' => $request->phone_number,
-            'state'=>'P'
-        ]);
-        
-        $shopping_cart_ids = json_decode($request->shopping_cart_ids);
-
-        for($i = 0; $i < count($shopping_cart_ids); $i++){
-            $shopping_cart = ShoppingCart::find($shopping_cart_ids[$i]);
-            $product = $shopping_cart->product()->first();
-
-            $order->products()->attach($order->id, [
-                "product_id" => $shopping_cart->product_id,
-                "quantity" => $shopping_cart->quantity,
-                "unit_price" => $product->price,
-                "total" => $product->price * $shopping_cart->quantity
+        DB::beginTransaction();
+        try {
+            $order = Order::create([
+                'user_id' => $request->user_id,
+                'address' => $request->address,
+                'phone_number' => $request->phone_number,
+                'state'=>'P'
             ]);
-
-            $order_product = $order->products()->get();
-
-            echo(json_encode($order_product));
-
-            // $shopping_cart->modifiers()->newPivotStatement()
-            //     ->where('shopping_cart_id', $shopping_cart->id)
-            //     ->update([
-            //         'shopping_cart_id' => null,
-            //         'order_product_id' => $order_product->id
-            //     ]);
-
-            // $shopping_cart->delete();
+            
+            $shopping_cart_ids = json_decode($request->shopping_cart_ids);
+    
+            for($i = 0; $i < count($shopping_cart_ids); $i++){
+                $shopping_cart = ShoppingCart::find($shopping_cart_ids[$i]);
+                $product = $shopping_cart->product()->first();
+    
+                $order->products()->attach($order->id, [
+                    "product_id" => $shopping_cart->product_id,
+                    "quantity" => $shopping_cart->quantity,
+                    "unit_price" => $product->price,
+                    "total" => $product->price * $shopping_cart->quantity
+                ]);
+                
+                $order_product = $order->products()->get()[0]->pivot->id;
+    
+                $shopping_cart->modifiers()->newPivotStatement()
+                    ->where('shopping_cart_id', $shopping_cart->id)
+                    ->update([
+                        'shopping_cart_id' => null,
+                        'order_product_id' => $order_product
+                    ]);
+    
+                $shopping_cart->delete();
+            }
+            DB::commit();
+            return response()->json($order, 201);
+        } catch (Throwable $t){
+            DB::rollBack();
+            return response()->json($t);
         }
-        // DB::rollBack();
-        return response()->json($order, 201);
     }
 
     /**
