@@ -119,7 +119,8 @@ class BranchController extends Controller
         return response()->json(['message'=>'Branch deleted successfully.'], 200);
     }
 
-    public function getProductsByBranch($id){
+    public function getProductsByBranch($id)
+    {
         try {
             $branch = Branch::findOrFail($id);
         } catch (ModelNotFoundException $e) {
