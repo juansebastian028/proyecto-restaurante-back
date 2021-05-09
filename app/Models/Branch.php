@@ -25,7 +25,7 @@ class Branch extends Model
     }
 
     public function products(){
-        return $this->belongsToMany(Product::class,'product_branch', 'product_id', 'branch_office_id')
+        return $this->belongsToMany(Product::class, 'product_branch')
         ->withPivot('state');
     }
 

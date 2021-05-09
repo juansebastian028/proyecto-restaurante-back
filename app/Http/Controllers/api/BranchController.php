@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use Illuminate\Http\Request;
 use App\Models\Branch;
-use App\Models\Product;
 
 class BranchController extends Controller
 {
@@ -129,8 +128,9 @@ class BranchController extends Controller
             ], 403);
         }
 
-        $products = $branch->products;
+        $products = $branch->products()->get();
 
         return response()->json($products, 200);
     }
+
 }

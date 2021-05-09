@@ -47,8 +47,11 @@ class OrderController extends Controller
             'phone_number' => $request->phone_number,
             'state'=>'P'
         ]);
+        
         $shopping_cart_ids = json_decode($request->shopping_cart_ids);
+
         for($i = 0; $i < count($shopping_cart_ids); $i++){
+
             $shopping_cart = ShoppingCart::find($shopping_cart_ids[$i]);
             $product = $shopping_cart->product()->first();
 
@@ -58,17 +61,19 @@ class OrderController extends Controller
                 "unit_price" => $product->price,
                 "total" => $product->price * $shopping_cart->quantity
             ]);
-            // $shopping_cart->modifiers()->newPivotStatement()
-            //     ->where('shopping_cart_id', $shopping_cart->id)
-            //     ->update([
-            //         'shopping_cart_id' => null,
-            //         'order_product_id' => $order_product_id
-            //     ]);
+            
+            $order_product_id = $order->products()->get()[0]->pivot->id;
+
+            $shopping_cart->modifiers()->newPivotStatement()
+            ->where('shopping_cart_id', $shopping_cart->id)
+            ->update([
+                'shopping_cart_id' => null,
+                'order_product_id' => $order_product_id
+            ]);
+
+            $shopping_cart->delete();
         }
-        $products = Order::with('products')->get();
-        echo(json_encode($products));
-        //echo(json_encode($order->products[$i]->pivot));
-        //return response()->json($order, 201);
+        return response()->json($order, 201);
     }
 
     /**
@@ -93,7 +98,7 @@ class OrderController extends Controller
 
         return Order::select('orders.id','address','phone_number','state', DB::raw('SUM(total) as total_order'))
         ->join('order_product','orders.id','=', 'order_product.order_id')
-        ->where('order.user_id', '=', $id)
+        ->where('orders.user_id', '=', $id)
         ->groupBy('orders.id','address','phone_number','state')->get();
     }
 

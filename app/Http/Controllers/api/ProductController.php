@@ -8,10 +8,6 @@ use Illuminate\Http\Request;
 
 use App\Models\Product;
 
-
-use Illuminate\Support\Facades\DB;
-
-
 class ProductController extends Controller
 {
     /**
@@ -25,7 +21,7 @@ class ProductController extends Controller
         ->join('categories', 'products.category_id', '=', 'categories.id')
         ->with([
             'branches' => function ($query) {
-                $query->select('branch_office_id');
+                $query->select('branch_id');
             }
         ])->get();
         
@@ -108,7 +104,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id
         ]);
 
-        $product->branches()->where('state', 'I')->delete();
+        $product->branches()->wherePivot('state','I')->detach();
 
         $branches = $product->branches()->get();
 
@@ -117,19 +113,15 @@ class ProductController extends Controller
         for($i = 0; $i < count($branches_ids); $i++){
             $flag = false;
             for($j = 0; $j < count($branches); $j++){
-                if($branches_ids[$i] == $branches[$j]->pivot->branch_office_id){
+                if($branches_ids[$i] == $branches[$j]->pivot->branch_id){
                     $flag = true;
                 }
             }
             if(!$flag){
-                DB::table('product_branch')->insert([
-                    'product_id' =>  $product->id, 
-                    'branch_office_id' => $branches_ids[$i], 
-                    'state' => 'I'
-                ]);
-                // $product
-                // ->branches()
-                // ->insert(array('product_id' =>  $product->id, 'branch_office_id' => $branches_ids[$i], 'state' => 'I'));
+
+                $product
+                ->branches()
+                ->attach($branches_ids[$i], ['product_id' =>  $product->id, 'state' => 'I']);
             }
         }
 
