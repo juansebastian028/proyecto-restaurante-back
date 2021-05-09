@@ -21,4 +21,8 @@ class ModifierGroup extends Model
     public function modifier(){
         return $this->belongsToMany(Modifier::class);
     }
+
+    public function categories(){
+        return $this->belongsToMany(ModifierGroup::class);
+    }
 }

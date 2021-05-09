@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login',[PassportAuthController::class, 'login']);
 Route::post('/register',[PassportAuthController::class, 'register']);
+Route::get('/products/all', [ProductController::class, 'getProducts']);
 
 Route::middleware(['auth:api', 'profile'])->group(function() {
 
@@ -65,10 +66,10 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
     });
 });
 
-Route::get('/products/group-modifiers', [ModifierGroupController::class, 'index']);
-Route::get('/products/modifiers', [ModifierController::class, 'index']);
 Route::get('/products/categories', [CategoryController::class, 'index']);
-Route::get('/products', [ProductController::class, 'index']);
+
+
+
 
 
 

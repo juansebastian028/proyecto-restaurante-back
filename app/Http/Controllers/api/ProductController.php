@@ -28,6 +28,11 @@ class ProductController extends Controller
         return response()->json($product, 200);
     }
 
+    public function getProducts(){
+        $product = Product::with('category', 'category.modifierGroups','category.modifierGroups.modifier')->get();
+        return response()->json($product, 200);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
