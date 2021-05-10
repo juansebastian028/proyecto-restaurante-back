@@ -50,15 +50,23 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {   
+        $path = storage_path();
+
+        if($image = $request->file('img')){
+            $img_name = $image->getClientOriginalName();
+            $image->move('uploads', $image->getClientOriginalName());
+        }
+
         $product = Product::create([
             'name' => $request->name,
             'price' => $request->price,
-            'img' => $request->img,
+            'img' => asset('/uploads/' . $img_name),
             'category_id' => $request->category_id
         ]);
 
         $product->branches()->attach(json_decode($request->branches_ids), array('state' => 'I'));
+
 
         return response()->json($product, 200);
     }

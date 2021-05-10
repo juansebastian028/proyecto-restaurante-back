@@ -66,6 +66,7 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
     });
 });
 
+Route::get('/cities', [CityController::class, 'index']);
 Route::get('/products/categories', [CategoryController::class, 'index']);
 
 
