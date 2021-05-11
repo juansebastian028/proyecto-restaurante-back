@@ -50,7 +50,7 @@ class ModifierController extends Controller
             'price' => $request->price
         ]);
 
-        $modifier->modifierGroup()->attach(json_decode($request->modifier_group));
+        $modifier->modifierGroup()->attach($request->modifier_group);
 
         return response()->json($modifier, 201);
     }
