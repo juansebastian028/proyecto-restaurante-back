@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use Illuminate\Http\Request;
 use App\Models\City;
+use App\Models\Product;
 
 class CityController extends Controller
 {
@@ -108,5 +109,35 @@ class CityController extends Controller
         
         $city->delete();
         return response()->json(['message'=>'City deleted successfully.'], 200);
+    }
+
+    public function getProductsByCity($id){
+        try {
+            $city = City::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'City not found.'
+            ], 403);
+        }
+
+        $cityWithBranch = $city->with(['branch'=> function ($query) use ($id){
+            $query->where('city_id', $id);
+        }])->where('id', $id)->get();
+
+        $branch = $cityWithBranch[0]->branch;
+        $branch_id = $cityWithBranch[0]->branch->id;
+
+        $branchWithProducts = $branch->with(['products'=> function ($query) use ($branch_id){
+            $query->wherePivot('branch_id', $branch_id)->wherePivot('state','A');
+        }])->where('id', $branch_id)->get();
+
+        $products = $branchWithProducts[0]->products;
+        $newProducts = [];
+        foreach ($products as $product){
+            $productsWith = Product::with('category','category.modifierGroups','category.modifierGroups.modifier')->find($product->id);
+            array_push($newProducts, $productsWith);
+        }
+
+        return response()->json($newProducts, 200);
     }
 }

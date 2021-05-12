@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login',[PassportAuthController::class, 'login']);
 Route::post('/register',[PassportAuthController::class, 'register']);
-Route::get('/products/all', [ProductController::class, 'getProducts']);
+Route::get('/cities/{id}/products', [CityController::class,'getProductsByCity']);
 
 Route::middleware(['auth:api', 'profile'])->group(function() {
 

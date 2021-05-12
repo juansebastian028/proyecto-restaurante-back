@@ -39,7 +39,7 @@ class PassportAuthController extends Controller
             $user = Auth::user();
             
             $token = $this->createToken($user);
-
+            
             return response()->json([
                 'token' => $token->accessToken
             ]);
