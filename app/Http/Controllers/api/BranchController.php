@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use Illuminate\Http\Request;
 use App\Models\Branch;
+use App\Models\Product;
 
 class BranchController extends Controller
 {
@@ -17,7 +18,7 @@ class BranchController extends Controller
      */
     public function index()
     {
-        return Branch::select("branches.id", "branches.name", "cities.name as city")
+        return Branch::select("branches.id", "branches.name", "city_id", "cities.name as city")
                             ->join('cities', 'branches.id', '=', 'cities.id')
                             ->get();
     }
@@ -116,5 +117,30 @@ class BranchController extends Controller
         
         $branch->delete();
         return response()->json(['message'=>'Branch deleted successfully.'], 200);
+    }
+
+    public function getProductsByBranch($id){
+        try {
+            $branch = Branch::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Branch not found.'
+            ], 403);
+        }
+
+        $branchWithProducts = $branch->with(['products'=> function ($query) use ($id){
+            $query->wherePivot('branch_id', $id)->wherePivot('state','A');
+        }])->where('id', $id)->get();
+
+        $products = $branchWithProducts[0]->products;
+        $newProducts = [];
+        
+        foreach ($products as $product){
+            $productsWith = Product::select('products.id', 'products.name', 'price','categories.name as category')
+            ->join('categories', 'products.category_id', '=', 'categories.id')->find($product->id);
+            array_push($newProducts, $productsWith);
+        }
+
+        return response()->json($newProducts, 200);
     }
 }

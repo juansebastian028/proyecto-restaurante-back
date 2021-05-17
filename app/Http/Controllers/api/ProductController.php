@@ -17,22 +17,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = Product::select('products.id', 'products.name', 'price','img','category_id','categories.name as category')
+        $products = Product::select('products.id', 'products.name', 'price','img','category_id','categories.name as category')
         ->join('categories', 'products.category_id', '=', 'categories.id')
-        ->with([
-            'branches' => function ($query) {
-                $query->select('branch_id');
-            }
-        ])->get();
+        ->with('branches')
+        ->get();
         
-        return response()->json($product, 200);
-    }
-
-    public function getProductsByCategory($id){
-
-        $products = Product::with('category','category.modifierGroups','category.modifierGroups.modifier')
-        ->where('category_id', $id)->get();
-
         return response()->json($products, 200);
     }
 

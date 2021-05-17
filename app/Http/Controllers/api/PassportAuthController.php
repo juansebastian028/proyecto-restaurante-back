@@ -20,11 +20,13 @@ class PassportAuthController extends Controller
             'profile_id' => $request->profile_id,
             'branch_office_id' => $request->branch_office_id,
         ]);
+        $profile = $user->profile()->first();
 
         $token = $this->createToken($user);
 
         return response()->json([
-            'token' => $token->accessToken
+            'token' => $token->accessToken,
+            'profile' => $profile
         ]);
     }
 
@@ -37,11 +39,13 @@ class PassportAuthController extends Controller
         if(Auth::attempt( [$fieldType=>$data['username'], 'password' => $data['password']] )){
             
             $user = Auth::user();
-            
+            $profile = $user->profile()->first();
+
             $token = $this->createToken($user);
-            
+
             return response()->json([
-                'token' => $token->accessToken
+                'token' => $token->accessToken,
+                'profile' => $profile
             ]);
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
