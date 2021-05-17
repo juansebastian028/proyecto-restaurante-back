@@ -70,7 +70,6 @@ class ProductController extends Controller
 
         $product->branches()->attach(json_decode($request->branches_ids), array('state' => 'I'));
 
-
         return response()->json($product, 200);
     }
 

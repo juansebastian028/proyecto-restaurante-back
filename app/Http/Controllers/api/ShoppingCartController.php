@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 use App\Models\ShoppingCart;
 use App\Models\User;
+use App\Models\Modifier;
 
 class ShoppingCartController extends Controller
 {
@@ -39,13 +40,33 @@ class ShoppingCartController extends Controller
      */
     public function store(Request $request)
     {
+        $modifiers_ids = array();
+        foreach($request->all() as $key => $value){
+            if($key != 'product_id' && $key != 'user_id' && $key != 'quantity' && $key != 'scope'){
+                if($key == 'multiple'){
+                    for($i = 0; $i < count($value); $i++){
+                        array_push($modifiers_ids, $value[$i]);
+                    }
+                } else {
+                    if($value != null)
+                        array_push($modifiers_ids, $value);
+                }
+            }
+        }
+
         $shoppingCart = ShoppingCart::create([
             'quantity' => $request->quantity,
             'product_id' => $request->product_id,
-            'user_id' => $request->user_id
+            'user_id' => 1 //$request->user_id
         ]);
 
-        $shoppingCart->modifiers()->attach(json_decode($request->modifiers, true));
+        for($i = 0; $i < count($modifiers_ids); $i++){
+            $modifier = Modifier::findOrFail($modifiers_ids[$i]);
+            $shoppingCart->modifiers()->attach(array([
+                'modifier_id' => $modifier->id,
+                'unit_price_modifier' => $modifier->price
+            ]));
+        }
 
         return response()->json($shoppingCart, 200);
     }
