@@ -112,6 +112,34 @@ class CityController extends Controller
     }
 
     public function getProductsByCity($id){
+        $products = $this->getProductsBranchByCity($id);
+        $newProducts = [];
+        foreach ($products as $product){
+            $productsWith = Product::with('category','category.modifierGroups','category.modifierGroups.modifier')->find($product->id);
+            array_push($newProducts, $productsWith);
+        }
+
+        return response()->json($newProducts, 200);
+    }
+
+    public function getProductsByCategory($city_id, $category_id){
+        $products = $this->getProductsBranchByCity($city_id);
+        $newProducts = [];
+        foreach ($products as $product){
+            $productsWith = Product::with('category','category.modifierGroups','category.modifierGroups.modifier')
+            ->where('category_id', $category_id)
+            ->find($product->id);
+
+            if ($productsWith !== null) {
+                array_push($newProducts, $productsWith);
+            }
+        }
+
+        return response()->json($newProducts, 200);
+    }
+
+    public function getProductsBranchByCity($id){
+        
         try {
             $city = City::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -131,13 +159,6 @@ class CityController extends Controller
             $query->wherePivot('branch_id', $branch_id)->wherePivot('state','A');
         }])->where('id', $branch_id)->get();
 
-        $products = $branchWithProducts[0]->products;
-        $newProducts = [];
-        foreach ($products as $product){
-            $productsWith = Product::with('category','category.modifierGroups','category.modifierGroups.modifier')->find($product->id);
-            array_push($newProducts, $productsWith);
-        }
-
-        return response()->json($newProducts, 200);
+        return $branchWithProducts[0]->products;
     }
 }

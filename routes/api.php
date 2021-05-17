@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login',[PassportAuthController::class, 'login']);
 Route::post('/register',[PassportAuthController::class, 'register']);
 Route::get('/cities/{id}/products', [CityController::class,'getProductsByCity']);
+Route::get('/cities/{city_id}/categories/{category_id}/products', [CityController::class,'getProductsByCategory']);
+
 
 Route::middleware(['auth:api', 'profile'])->group(function() {
 
@@ -55,7 +57,7 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
     Route::middleware(['scope:super_admin,admin'])
     ->group(function() {
         Route::resource('/branches', BranchController::class);
-        Route::get('/branches/productsByBrach/{id}', [BranchController::class, 'getProductsByBranch']);
+        Route::get('/branches/{id}/products', [BranchController::class,'getProductsByBranch']);
     });
 
     Route::middleware(['scope:super_admin,admin,e-commerce'])
