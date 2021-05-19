@@ -26,7 +26,8 @@ class PassportAuthController extends Controller
 
         return response()->json([
             'token' => $token->accessToken,
-            'profile' => $profile
+            'profile' => $profile,
+            'user' => $user
         ]);
     }
 
@@ -45,7 +46,8 @@ class PassportAuthController extends Controller
 
             return response()->json([
                 'token' => $token->accessToken,
-                'profile' => $profile
+                'profile' => $profile,
+                'user' => $user
             ]);
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
