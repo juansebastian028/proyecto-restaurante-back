@@ -42,7 +42,7 @@ class ShoppingCartController extends Controller
     {
         $modifiers_ids = array();
         foreach($request->all() as $key => $value){
-            if($key != 'product_id' && $key != 'user_id' && $key != 'quantity' && $key != 'scope'){
+            if($key != 'product_id' && $key != 'user_id' && $key != 'quantity' && $key != 'scope' && $key != 'product' && $key != 'image' && $key != 'price'){
                 if($key == 'multiple'){
                     for($i = 0; $i < count($value); $i++){
                         array_push($modifiers_ids, $value[$i]);
@@ -57,7 +57,7 @@ class ShoppingCartController extends Controller
         $shoppingCart = ShoppingCart::create([
             'quantity' => $request->quantity,
             'product_id' => $request->product_id,
-            'user_id' => 1 //$request->user_id
+            'user_id' => $request->user_id
         ]);
 
         for($i = 0; $i < count($modifiers_ids); $i++){
