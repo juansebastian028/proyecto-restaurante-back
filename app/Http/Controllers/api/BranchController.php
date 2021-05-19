@@ -19,7 +19,7 @@ class BranchController extends Controller
     public function index()
     {
         return Branch::select("branches.id", "branches.name", "city_id", "cities.name as city")
-                            ->join('cities', 'branches.id', '=', 'cities.id')
+                            ->join('cities', 'city_id', '=', 'cities.id')
                             ->get();
     }
 

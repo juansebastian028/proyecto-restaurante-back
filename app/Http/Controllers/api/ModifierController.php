@@ -99,7 +99,7 @@ class ModifierController extends Controller
             'price' => $request->price
         ]);
 
-        $modifier->modifierGroup()->sync(json_decode($request->modifier_group_ids));
+        $modifier->modifierGroup()->sync($request->modifier_groups_ids);
 
         return response()->json($modifier, 200);
     }

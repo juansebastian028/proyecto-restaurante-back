@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Modifier;
+use App\Models\Category;
 
 class ModifierGroup extends Model
 {
@@ -15,7 +16,6 @@ class ModifierGroup extends Model
     protected $fillable = [
         'name',
         'selection_type',
-        'category_id'
     ];
 
     public function modifier(){
@@ -23,6 +23,6 @@ class ModifierGroup extends Model
     }
 
     public function categories(){
-        return $this->belongsToMany(ModifierGroup::class);
+        return $this->belongsToMany(Category::class, 'modifier_group_category');
     }
 }
