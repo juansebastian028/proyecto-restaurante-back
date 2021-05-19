@@ -17,6 +17,8 @@ class CreateModifierGroups extends Migration
             $table->id();
             $table->string('name');
             $table->char('selection_type', 1);
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
             $table->timestamps();
         });
     }

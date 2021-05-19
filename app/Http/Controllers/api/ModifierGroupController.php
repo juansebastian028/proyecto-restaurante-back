@@ -17,7 +17,9 @@ class ModifierGroupController extends Controller
      */
     public function index()
     {
-        return ModifierGroup::with('categories')->get();
+        return ModifierGroup::select('modifier_groups.id', 'modifier_groups.name', 'category_id', 'selection_type', 'categories.name as category')
+        ->join('categories', 'modifier_groups.category_id', '=', 'categories.id')
+        ->get();
     }
 
     /**
@@ -41,9 +43,8 @@ class ModifierGroupController extends Controller
         $modifierGroup = ModifierGroup::create([
             'name' => $request->name,
             'selection_type' => $request->selection_type,
+            'category_id' => $request->category_id
         ]);
-
-        $modifierGroup->categories()->attach($request->categories_ids);
 
         return response()->json($modifierGroup, 201);
     }
@@ -91,9 +92,8 @@ class ModifierGroupController extends Controller
         $modifierGroup->update([
             'name' => $request->name,
             'selection_type' => $request->selection_type,
+            'category_id' => $request->category_id
         ]);
-
-        $modifierGroup->categories()->sync($request->categories_ids);
 
         return response()->json($modifierGroup, 200);
     }

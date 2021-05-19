@@ -16,6 +16,7 @@ class ModifierGroup extends Model
     protected $fillable = [
         'name',
         'selection_type',
+        'category_id'
     ];
 
     public function modifier(){
@@ -23,6 +24,6 @@ class ModifierGroup extends Model
     }
 
     public function categories(){
-        return $this->belongsToMany(Category::class, 'modifier_group_category');
+        return $this->hasMany(Category::class);
     }
 }
