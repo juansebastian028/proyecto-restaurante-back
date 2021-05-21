@@ -20,6 +20,6 @@ class Category extends Model
     }
 
     public function modifierGroups(){
-        return $this->belongsToMany(ModifierGroup::class);
+        return $this->hasMany(ModifierGroup::class);
     }
 }

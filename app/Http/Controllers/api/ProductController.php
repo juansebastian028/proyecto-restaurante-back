@@ -43,9 +43,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {   
-        $path = storage_path();
-
         if($image = $request->file('img')){
+            echo(json_decode($image));
             $img_name = $image->getClientOriginalName();
             $image->move('uploads', $image->getClientOriginalName());
         }
@@ -61,6 +60,7 @@ class ProductController extends Controller
 
         return response()->json($product, 200);
     }
+    
 
     /**
      * Display the specified resource.
