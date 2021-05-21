@@ -63,6 +63,7 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
     Route::middleware(['scope:super_admin,admin,e-commerce'])
     ->group(function() {
         Route::resource('/orders', OrderController::class);
+        Route::get('/orders/products/{id}', [OrderController::class, 'showProductsOrder']);
         Route::get('/orders/user/{id}', [OrderController::class, 'showByUser']);
         Route::get('/orders/branch/{id}', [OrderController::class, 'showByBranch']);
     });

@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\ShoppingCart;
 use App\Models\Branch;
+use App\Models\ModifierGroup;
 
 class OrderController extends Controller
 {
@@ -21,6 +22,13 @@ class OrderController extends Controller
      */
     public function index()
     {
+        return Order::select('orders.id','address','phone_number',
+        DB::raw("DATE_FORMAT(orders.created_at,'%Y/%m/%d') AS date"),
+            DB::raw("CASE state WHEN 'P' THEN 'En Proceso' WHEN 'C' THEN 'Cancelado' WHEN 'F' THEN 'Finalizado' END AS state"), 
+            DB::raw('SUM(total) as total_order'), DB::raw("CONCAT(MAX(users.name), ' ', MAX(users.lastname)) as user"))
+        ->join('order_product','orders.id','=', 'order_product.order_id')
+        ->leftJoin('users','orders.user_id','=', 'users.id')
+        ->groupBy('orders.id','address','phone_number','state', 'orders.created_at')->get();
     }
 
     /**
@@ -127,6 +135,43 @@ class OrderController extends Controller
         ->leftJoin('order_product','orders.id','=', 'order_product.order_id')
         ->where('orders.branch_id', '=', $id)
         ->groupBy('orders.id','address','phone_number','orders.state')->get();
+    }
+
+    public function showProductsOrder($id){
+        try {
+            Order::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Order not found.'
+            ], 403);
+        }
+        
+        $order = Order::find($id)::with('products')->where('id', $id)->get()[0];
+
+        $products = $order->products;
+
+        foreach ($products as $product){
+            $categories = DB::table('categories')->where('id', $product->category_id)->get();
+            foreach ($categories as $category){
+                $modifier_groups = DB::table('modifier_groups')->where('category_id', $product->category_id)->get();
+                foreach ($modifier_groups as $modifier_group){
+                    
+                    $modifiers = DB::table('modifier_modifier_group')
+                    ->leftJoin('shopping_cart_modifier', 'modifier_modifier_group.modifier_id', '=', 'shopping_cart_modifier.modifier_id')
+                    ->leftJoin('modifiers', 'shopping_cart_modifier.modifier_id', '=', 'modifiers.id')
+                    ->where('shopping_cart_modifier.order_product_id', $product->pivot->id)
+                    ->where('modifier_modifier_group.modifier_group_id', $modifier_group->id)
+                    ->get();
+
+                    $modifier_group->modifiers = $modifiers;
+                }
+                $category->modifier_groups = $modifier_groups;
+            }
+            $product->category = $category;
+        }
+        $order->products = $products;
+
+        return response()->json($order, 200);
     }
 
     /**
