@@ -19,7 +19,7 @@ class BranchController extends Controller
     public function index()
     {
         return Branch::select("branches.id", "branches.name", "city_id", "cities.name as city")
-                            ->join('cities', 'city_id', '=', 'cities.id')
+                            ->leftJoin('cities', 'city_id', '=', 'cities.id')
                             ->get();
     }
 
@@ -129,7 +129,7 @@ class BranchController extends Controller
         }
 
         $branchWithProducts = $branch->with(['products'=> function ($query) use ($id){
-            $query->wherePivot('branch_id', $id)->wherePivot('state','A');
+            $query->wherePivot('branch_id', $id);
         }])->where('id', $id)->get();
 
         $products = $branchWithProducts[0]->products;
