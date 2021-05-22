@@ -28,6 +28,7 @@ class OrderController extends Controller
             DB::raw('SUM(total) as total_order'), DB::raw("CONCAT(MAX(users.name), ' ', MAX(users.lastname)) as user"))
         ->join('order_product','orders.id','=', 'order_product.order_id')
         ->leftJoin('users','orders.user_id','=', 'users.id')
+        ->where('orders.user_id','<>', null)
         ->groupBy('orders.id','address','phone_number','state', 'orders.created_at')->get();
     }
 
