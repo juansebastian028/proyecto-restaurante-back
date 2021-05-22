@@ -32,6 +32,12 @@ Route::get('/cities/{city_id}/categories/{category_id}/products', [CityControlle
 
 Route::middleware(['auth:api', 'profile'])->group(function() {
 
+    Route::middleware(['scope:admin,e-commerce'])
+    ->group(function() {
+        Route::get('/users/{id}', [UserController::class, 'show']);
+        Route::put('/users/{id}', [UserController::class, 'update']);
+    });
+
     Route::middleware(['scope:super_admin'])
     ->group(function() {
         Route::resource('/users', UserController::class);
@@ -47,19 +53,22 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
         Route::resource('/shopping-cart', ShoppingCartController::class);
         Route::get('/shopping-cart/user/{id}', [ShoppingCartController::class,'showByUser']);
     });
-    
-    Route::middleware(['scope:admin,e-commerce'])
-    ->group(function() {
-        Route::get('/users/{id}', [UserController::class, 'show']);
-        Route::put('/users/{id}', [UserController::class, 'update']);
-    });
-    
+        
     Route::middleware(['scope:super_admin,admin'])
     ->group(function() {
         Route::resource('/branches', BranchController::class);
-        Route::get('/branches/{id}/products', [BranchController::class,'getProductsByBranch']);
     });
 
+    Route::middleware(['scope:super_admin,admin,e-commerce'])
+    ->group(function() {
+        Route::get('/branches', [BranchController::class, 'index']);
+    });
+
+    Route::middleware(['scope:super_admin,admin'])
+    ->group(function() {
+        Route::get('/branches/{id}/products', [BranchController::class,'getProductsByBranch']);
+    });
+    
     Route::middleware(['scope:super_admin,admin,e-commerce'])
     ->group(function() {
         Route::resource('/orders', OrderController::class);

@@ -44,7 +44,6 @@ class ProductController extends Controller
     public function store(Request $request)
     {   
         if($image = $request->file('img')){
-            echo(json_decode($image));
             $img_name = $image->getClientOriginalName();
             $image->move('uploads', $image->getClientOriginalName());
         }
@@ -56,7 +55,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id
         ]);
 
-        $product->branches()->attach(json_decode($request->branches_ids), array('state' => 'I'));
+        $product->branches()->attach($request->branches_ids, array('state' => 'I'));
 
         return response()->json($product, 200);
     }
@@ -112,7 +111,7 @@ class ProductController extends Controller
 
         $branches = $product->branches()->get();
 
-        $branches_ids = json_decode($request->branches_ids);
+        $branches_ids = $request->branches_ids;
 
         for($i = 0; $i < count($branches_ids); $i++){
             $flag = false;
