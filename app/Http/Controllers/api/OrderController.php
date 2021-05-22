@@ -23,7 +23,7 @@ class OrderController extends Controller
     public function index()
     {
         return Order::select('orders.id','address','phone_number',
-        DB::raw("DATE_FORMAT(orders.created_at,'%Y/%m/%d') AS date"),
+            DB::raw("DATE_FORMAT(orders.created_at,'%Y/%m/%d') AS date"),
             DB::raw("CASE state WHEN 'P' THEN 'En Proceso' WHEN 'C' THEN 'Cancelado' WHEN 'F' THEN 'Finalizado' END AS state"), 
             DB::raw('SUM(total) as total_order'), DB::raw("CONCAT(MAX(users.name), ' ', MAX(users.lastname)) as user"))
         ->join('order_product','orders.id','=', 'order_product.order_id')
@@ -116,10 +116,14 @@ class OrderController extends Controller
             ], 403);
         }
 
-        return Order::select('orders.id','address','phone_number','state', DB::raw('SUM(total) as total_order'))
+        return Order::select('orders.id','address','phone_number',
+            DB::raw("DATE_FORMAT(orders.created_at,'%Y/%m/%d') AS date"),
+            DB::raw("CASE state WHEN 'P' THEN 'En Proceso' WHEN 'C' THEN 'Cancelado' WHEN 'F' THEN 'Finalizado' END AS state"), 
+            DB::raw('SUM(total) as total_order'), DB::raw("CONCAT(MAX(users.name), ' ', MAX(users.lastname)) as user"))
         ->join('order_product','orders.id','=', 'order_product.order_id')
+        ->leftJoin('users','orders.user_id','=', 'users.id')
         ->where('orders.user_id', '=', $id)
-        ->groupBy('orders.id','address','phone_number','state')->get();
+        ->groupBy('orders.id','address','phone_number','state','orders.created_at')->get();
     }
 
     public function showByBranch($id){
@@ -131,10 +135,14 @@ class OrderController extends Controller
             ], 403);
         }
 
-        return Order::select('orders.id','address','phone_number','orders.state', DB::raw('SUM(total) as total_order'))
+        return Order::select('orders.id','address','phone_number',
+            DB::raw("DATE_FORMAT(orders.created_at,'%Y/%m/%d') AS date"),
+            DB::raw("CASE state WHEN 'P' THEN 'En Proceso' WHEN 'C' THEN 'Cancelado' WHEN 'F' THEN 'Finalizado' END AS state"), 
+            DB::raw('SUM(total) as total_order'), DB::raw("CONCAT(MAX(users.name), ' ', MAX(users.lastname)) as user"))
         ->leftJoin('order_product','orders.id','=', 'order_product.order_id')
+        ->leftJoin('users','orders.user_id','=', 'users.id')
         ->where('orders.branch_id', '=', $id)
-        ->groupBy('orders.id','address','phone_number','orders.state')->get();
+        ->groupBy('orders.id','address','phone_number','orders.state', 'orders.created_at')->get();
     }
 
     public function showProductsOrder($id){
@@ -170,6 +178,39 @@ class OrderController extends Controller
             $product->category = $category;
         }
         $order->products = $products;
+
+        return response()->json($order, 200);
+    }
+
+    public function cancelOrder(Request $request, $id)
+    {
+        try {
+            $order = Order::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Order not found.'
+            ], 403);
+        }
+
+        $order->update([
+            'cancellation_description' => $request->cancellation_description,
+            'state' => 'C'
+        ]);
+
+        return response()->json($order, 200);
+    }
+
+    public function finalizeOrder(Request $request, $id)
+    {
+        try {
+            $order = Order::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Order not found.'
+            ], 403);
+        }
+
+        $order->update(['state' => $request->state]);
 
         return response()->json($order, 200);
     }
