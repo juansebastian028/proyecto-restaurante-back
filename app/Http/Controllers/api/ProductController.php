@@ -55,7 +55,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id
         ]);
 
-        $product->branches()->attach($request->branches_ids, array('state' => 'I'));
+        $product->branches()->attach(json_decode($request->branches_ids), array('state' => 'I'));
 
         return response()->json($product, 200);
     }
