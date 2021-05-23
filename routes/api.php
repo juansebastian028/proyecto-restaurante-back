@@ -57,6 +57,7 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
     Route::middleware(['scope:super_admin,admin'])
     ->group(function() {
         Route::resource('/branches', BranchController::class);
+        Route::put('/branches/{branch_id}/products/{product_id}', [ProductController::class, 'updateProductState']);
     });
 
     Route::middleware(['scope:super_admin,admin,e-commerce'])

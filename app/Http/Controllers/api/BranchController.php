@@ -136,8 +136,10 @@ class BranchController extends Controller
         $newProducts = [];
         
         foreach ($products as $product){
-            $productsWith = Product::select('products.id', 'products.name', 'price','categories.name as category')
-            ->join('categories', 'products.category_id', '=', 'categories.id')->find($product->id);
+            $productsWith = Product::select('products.id','products.name','products.price','product_branch.state','product_branch.branch_id')
+            ->join('product_branch','product_id','=','products.id')
+            ->where('product_branch.branch_id','=', $id)
+            ->find($product->id);
             array_push($newProducts, $productsWith);
         }
 
