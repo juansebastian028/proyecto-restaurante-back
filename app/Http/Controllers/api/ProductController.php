@@ -55,7 +55,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id
         ]);
 
-        $product->branches()->attach($request->branches_ids, array('state' => 'I'));
+        $product->branches()->attach(json_decode($request->branches_ids), array('state' => 'I'));
 
         return response()->json($product, 200);
     }
@@ -100,10 +100,20 @@ class ProductController extends Controller
             ], 403);
         }
 
+        if($image = $request->file('img')){
+
+            $img_name = $image->getClientOriginalName();
+            $image->move('uploads', $image->getClientOriginalName());
+      
+        }else{
+            $previous_image_url = $product->img;
+            $img_name = '';
+        }
+
         $product->update([
             'name' => $request->name,
             'price' => $request->price,
-            'img' => $request->img,
+            'img' => $img_name !== '' ? asset('/uploads/' . $img_name) : $previous_image_url,
             'category_id' => $request->category_id
         ]);
 
@@ -111,7 +121,7 @@ class ProductController extends Controller
 
         $branches = $product->branches()->get();
 
-        $branches_ids = $request->branches_ids;
+        $branches_ids = json_decode($request->branches_ids);
 
         for($i = 0; $i < count($branches_ids); $i++){
             $flag = false;
@@ -127,6 +137,22 @@ class ProductController extends Controller
                 ->attach($branches_ids[$i], ['product_id' =>  $product->id, 'state' => 'I']);
             }
         }
+
+        return response()->json($product, 200);
+    }
+
+    public function updateProductState($branch_id, $product_id, Request $request){
+        try {
+            $product = Product::findOrFail($product_id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Product not found.'
+            ], 403);
+        }
+
+        $product->branches()->updateExistingPivot($branch_id, [
+            'state' => $request->state
+        ]);
 
         return response()->json($product, 200);
     }
