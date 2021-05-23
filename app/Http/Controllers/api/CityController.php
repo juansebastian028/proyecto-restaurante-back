@@ -122,6 +122,22 @@ class CityController extends Controller
         return response()->json($newProducts, 200);
     }
 
+    public function searchProducts(Request $request, $id){
+        $products = $this->getProductsBranchByCity($id);
+        $newProducts = [];
+        foreach ($products as $product){
+            $productsWith = Product::with('category','category.modifierGroups','category.modifierGroups.modifier')
+            ->where('name', 'LIKE', '%'.$request->search.'%')
+            ->find($product->id);
+
+            if($productsWith){
+                array_push($newProducts, $productsWith);
+            }
+        }
+
+        return response()->json($newProducts, 200);
+    }
+
     public function getProductsByCategory($city_id, $category_id){
         $products = $this->getProductsBranchByCity($city_id);
         $newProducts = [];

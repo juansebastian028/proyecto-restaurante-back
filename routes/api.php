@@ -28,11 +28,13 @@ Route::post('/login',[PassportAuthController::class, 'login']);
 Route::post('/register',[PassportAuthController::class, 'register']);
 Route::get('/cities/{id}/products', [CityController::class,'getProductsByCity']);
 Route::get('/cities/{city_id}/categories/{category_id}/products', [CityController::class,'getProductsByCategory']);
+Route::post('/cities/{city_id}/products', [CityController::class,'searchProducts']);
+
 
 
 Route::middleware(['auth:api', 'profile'])->group(function() {
-
-    Route::middleware(['scope:admin,e-commerce'])
+    
+    Route::middleware(['scope:admin,e-commerce,super_admin'])
     ->group(function() {
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::put('/users/{id}', [UserController::class, 'update']);
