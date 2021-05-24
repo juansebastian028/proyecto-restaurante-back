@@ -24,6 +24,9 @@ class PassportAuthController extends Controller
 
         $token = $this->createToken($user);
 
+        $branch = $user->branch()->orWhere('id', $user->branch_office_id)->first();
+        $user->city_id = $branch->city_id;
+
         return response()->json([
             'token' => $token->accessToken,
             'profile' => $profile,
@@ -41,8 +44,13 @@ class PassportAuthController extends Controller
             
             $user = Auth::user();
             $profile = $user->profile()->first();
-
+            
             $token = $this->createToken($user);
+
+            $branch = $user->branch()->orWhere('id', $user->branch_office_id)->first();
+            if(isset($branch->city_id)){
+                $user->city_id = $branch->city_id;
+            }
 
             return response()->json([
                 'token' => $token->accessToken,

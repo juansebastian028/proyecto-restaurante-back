@@ -19,6 +19,7 @@ class Order extends Model
         'cancellation_description',
         'state',
         'user_id',
+        'branch_id'
     ];
     
     public function shoppingCart(){

@@ -41,6 +41,14 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
+        $branches = Branch::where('city_id', $request->city_id)->get();
+
+        if(count($branches)){
+            return response()->json([
+                'message' => 'La ciudad ya esta asignada a una sucursal'
+            ], 403);
+        }
+
         $branch = Branch::create([
             'name' => $request->name,
             'city_id' => $request->city_id

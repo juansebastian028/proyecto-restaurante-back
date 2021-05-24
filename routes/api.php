@@ -31,7 +31,6 @@ Route::get('/cities/{city_id}/categories/{category_id}/products', [CityControlle
 Route::post('/cities/{city_id}/products', [CityController::class,'searchProducts']);
 
 
-
 Route::middleware(['auth:api', 'profile'])->group(function() {
     
     Route::middleware(['scope:admin,e-commerce,super_admin'])
@@ -62,11 +61,6 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
         Route::put('/branches/{branch_id}/products/{product_id}', [ProductController::class, 'updateProductState']);
     });
 
-    Route::middleware(['scope:super_admin,admin,e-commerce'])
-    ->group(function() {
-        Route::get('/branches', [BranchController::class, 'index']);
-    });
-
     Route::middleware(['scope:super_admin,admin'])
     ->group(function() {
         Route::get('/branches/{id}/products', [BranchController::class,'getProductsByBranch']);
@@ -85,12 +79,4 @@ Route::middleware(['auth:api', 'profile'])->group(function() {
 
 Route::get('/cities', [CityController::class, 'index']);
 Route::get('/products/categories', [CategoryController::class, 'index']);
-
-
-
-
-
-
-
-
-
+Route::get('/branches', [BranchController::class, 'index']);

@@ -25,7 +25,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::select("users.id", "users.name", "lastname", "username", "email", "profile_id", "profiles.type as profile", "branch_office_id", "branches.name as branch")
+        return User::select("users.id", "users.name", "lastname", "username", "email", "profile_id", "profiles.type as profile", "branch_office_id", "city_id", "branches.name as branch")
                             ->leftJoin('profiles', 'users.profile_id', '=', 'profiles.id')
                             ->leftJoin('branches', 'users.branch_office_id', '=', 'branches.id')
                             ->get();
@@ -76,6 +76,11 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'User not found.'
             ], 403);
+        }
+
+        $branch = $user->branch()->orWhere('id', $user->branch_office_id)->first();
+        if(isset($branch->city_id)){
+            $user->city_id = $branch->city_id;
         }
 
         return $user;
