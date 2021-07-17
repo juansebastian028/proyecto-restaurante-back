@@ -17,10 +17,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::select('products.id', 'products.name', 'price','img','category_id','categories.name as category')
-        ->join('categories', 'products.category_id', '=', 'categories.id')
-        ->with('branches')
-        ->get();
+        $products = Product::with('category','branches')->get();
         
         return response()->json($products, 200);
     }
@@ -106,14 +103,13 @@ class ProductController extends Controller
             $image->move('uploads', $image->getClientOriginalName());
       
         }else{
-            $previous_image_url = $product->img;
             $img_name = '';
         }
 
         $product->update([
             'name' => $request->name,
             'price' => $request->price,
-            'img' => $img_name !== '' ? asset('/uploads/' . $img_name) : $previous_image_url,
+            'img' => $img_name !== '' ? asset('/uploads/' . $img_name) : $product->img,
             'category_id' => $request->category_id
         ]);
 
@@ -141,7 +137,8 @@ class ProductController extends Controller
         return response()->json($product, 200);
     }
 
-    public function updateProductState($branch_id, $product_id, Request $request){
+    public function updateProductState($branch_id, $product_id, Request $request)
+    {
         try {
             $product = Product::findOrFail($product_id);
         } catch (ModelNotFoundException $e) {

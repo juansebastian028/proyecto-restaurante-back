@@ -18,11 +18,7 @@ class ModifierController extends Controller
      */
     public function index()
     {
-        $modifier = Modifier::select('id', 'name', 'price')->with([
-            'modifierGroup' => function ($query) {
-                $query->select('modifier_group_id');
-            }
-        ])->get();
+        $modifier = Modifier::with('modifierGroup')->get();
         
         return response()->json($modifier, 200);
     }

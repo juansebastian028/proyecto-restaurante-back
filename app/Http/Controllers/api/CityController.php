@@ -18,7 +18,7 @@ class CityController extends Controller
      */
     public function index()
     {
-        return City::select('id', 'name')->get();
+        return City::all();
     }
 
     /**
@@ -111,7 +111,8 @@ class CityController extends Controller
         return response()->json(['message'=>'City deleted successfully.'], 200);
     }
 
-    public function getProductsByCity($id){
+    public function getProductsByCity($id)
+    {
         $products = $this->getProductsBranchByCity($id);
         $newProducts = [];
         foreach ($products as $product){
@@ -122,12 +123,13 @@ class CityController extends Controller
         return response()->json($newProducts, 200);
     }
 
-    public function searchProducts(Request $request, $id){
+    public function searchProducts(Request $request, $id)
+    {
         $products = $this->getProductsBranchByCity($id);
         $newProducts = [];
         foreach ($products as $product){
             $productsWith = Product::with('category','category.modifierGroups','category.modifierGroups.modifier')
-            ->where('name', 'LIKE', '%'.$request->search.'%')
+            ->where('name', 'LIKE', '%'. $request->search .'%')
             ->find($product->id);
 
             if($productsWith){
@@ -138,7 +140,8 @@ class CityController extends Controller
         return response()->json($newProducts, 200);
     }
 
-    public function getProductsByCategory($city_id, $category_id){
+    public function getProductsByCategory($city_id, $category_id)
+    {
         $products = $this->getProductsBranchByCity($city_id);
         $newProducts = [];
         foreach ($products as $product){
@@ -146,7 +149,7 @@ class CityController extends Controller
             ->where('category_id', $category_id)
             ->find($product->id);
 
-            if ($productsWith !== null) {
+            if ($productsWith) {
                 array_push($newProducts, $productsWith);
             }
         }
@@ -154,7 +157,8 @@ class CityController extends Controller
         return response()->json($newProducts, 200);
     }
 
-    public function getProductsBranchByCity($id){
+    public function getProductsBranchByCity($id)
+    {
         
         try {
             $city = City::findOrFail($id);
@@ -177,4 +181,5 @@ class CityController extends Controller
 
         return $branchWithProducts[0]->products;
     }
+    
 }

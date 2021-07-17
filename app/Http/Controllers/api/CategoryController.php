@@ -17,7 +17,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return Category::select('id', 'name')->get();
+        return Category::all();
     }
 
     /**

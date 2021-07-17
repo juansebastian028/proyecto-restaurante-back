@@ -88,8 +88,6 @@ class BranchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $branch = Branch::find($id);
-
         try {
             $branch = Branch::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -127,7 +125,8 @@ class BranchController extends Controller
         return response()->json(['message'=>'Branch deleted successfully.'], 200);
     }
 
-    public function getProductsByBranch($id){
+    public function getProductsByBranch($id)
+    {
         try {
             $branch = Branch::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -148,9 +147,11 @@ class BranchController extends Controller
             ->join('product_branch','product_id','=','products.id')
             ->where('product_branch.branch_id','=', $id)
             ->find($product->id);
+
             array_push($newProducts, $productsWith);
         }
 
         return response()->json($newProducts, 200);
     }
+    
 }

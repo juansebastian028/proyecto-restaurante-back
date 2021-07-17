@@ -79,6 +79,7 @@ class UserController extends Controller
         }
 
         $branch = $user->branch()->orWhere('id', $user->branch_office_id)->first();
+        
         if(isset($branch->city_id)){
             $user->city_id = $branch->city_id;
         }

@@ -50,50 +50,38 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        DB::beginTransaction();
+        $order = Order::create([
+            'user_id' => $request->user_id,
+            'branch_id' => $request->branch_id,
+            'address' => $request->address,
+            'phone_number' => $request->phone_number,
+            'state'=>'P'
+        ]);
+        
+        $shopping_cart_ids = $request->shopping_cart_ids;
 
-        try {
-            $order = Order::create([
-                'user_id' => $request->user_id,
-                'branch_id' => $request->branch_id,
-                'address' => $request->address,
-                'phone_number' => $request->phone_number,
-                'state'=>'P'
+        for($i = 0; $i < count($shopping_cart_ids); $i++){
+
+            $shopping_cart = ShoppingCart::find($shopping_cart_ids[$i]['id']);
+            $product = $shopping_cart->product()->first();
+
+            $order->products()->attach($product->id, [
+                "product_id" => $shopping_cart->product_id,
+                "quantity" => $shopping_cart->quantity,
+                "unit_price" => $product->price,
+                "total" => $product->price * $shopping_cart->quantity
             ]);
-            
-            $shopping_cart_ids = $request->shopping_cart_ids;
-    
-            for($i = 0; $i < count($shopping_cart_ids); $i++){
-    
-                $shopping_cart = ShoppingCart::find($shopping_cart_ids[$i]['id']);
-                $product = $shopping_cart->product()->first();
-    
-                $order->products()->attach($product->id, [
-                    "product_id" => $shopping_cart->product_id,
-                    "quantity" => $shopping_cart->quantity,
-                    "unit_price" => $product->price,
-                    "total" => $product->price * $shopping_cart->quantity
-                ]);
 
-                $order_product_id = $order->products()
-                ->where('product_id', $shopping_cart->product_id)
-                ->get()[0]->pivot->id;
-    
-                $shopping_cart->modifiers()->newPivotStatement()
-                ->where('shopping_cart_id', $shopping_cart->id)
-                ->update([
-                    'shopping_cart_id' => null,
-                    'order_product_id' => $order_product_id
-                ]);
-    
-                $shopping_cart->delete();
-            }
-            
-            DB::commit();
-            return response()->json($order, 201);
-        } catch(Exception $e) {
-            DB::rollBack();
-            return response()->json($e, 402);
+            $order_product_id = $order->products()
+            ->where('product_id', $shopping_cart->product_id)
+            ->get()[0]->pivot->id;
+
+            $shopping_cart->modifiers()->newPivotStatement()
+            ->where('shopping_cart_id', $shopping_cart->id)
+            ->update([
+                'shopping_cart_id' => null,
+                'order_product_id' => $order_product_id
+            ]);
         }
     }
 
@@ -108,7 +96,8 @@ class OrderController extends Controller
         //
     }
 
-    public function showByUser($id){
+    public function showByUser($id)
+    {
         try {
             $user = User::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -127,7 +116,8 @@ class OrderController extends Controller
         ->groupBy('orders.id','address','phone_number','state','orders.created_at')->get();
     }
 
-    public function showByBranch($id){
+    public function showByBranch($id)
+    {
         try {
             $branch = Branch::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -146,7 +136,8 @@ class OrderController extends Controller
         ->groupBy('orders.id','address','phone_number','orders.state', 'orders.created_at')->get();
     }
 
-    public function showProductsOrder($id){
+    public function showProductsOrder($id)
+    {
         try {
             Order::findOrFail($id);
         } catch (ModelNotFoundException $e) {

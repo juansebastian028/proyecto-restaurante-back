@@ -10,7 +10,8 @@ use App\Models\Profile;
 
 class PassportAuthController extends Controller
 {
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $user = User::create([
             'name'=> $request->name,
             'lastname'=> $request->lastname,
@@ -34,7 +35,8 @@ class PassportAuthController extends Controller
         ]);
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
 
         $data = $request->all();
   
@@ -62,7 +64,8 @@ class PassportAuthController extends Controller
         }
     }
 
-    public function createToken($user){
+    public function createToken($user)
+    {
         $userProfile = $user->profile()->first();
               
         if ($userProfile) {

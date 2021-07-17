@@ -17,9 +17,7 @@ class ModifierGroupController extends Controller
      */
     public function index()
     {
-        return ModifierGroup::select('modifier_groups.id', 'modifier_groups.name', 'category_id', 'selection_type', 'categories.name as category')
-        ->leftJoin('categories', 'modifier_groups.category_id', '=', 'categories.id')
-        ->get();
+        return ModifierGroup::all();
     }
 
     /**

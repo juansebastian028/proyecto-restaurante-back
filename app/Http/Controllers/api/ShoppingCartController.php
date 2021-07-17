@@ -40,16 +40,17 @@ class ShoppingCartController extends Controller
      */
     public function store(Request $request)
     {
-        $modifiers_ids = array();
+        $modifiers_ids = [];
         foreach($request->all() as $key => $value){
-            if($key != 'product_id' && $key != 'user_id' && $key != 'quantity' && $key != 'scope' && $key != 'product' && $key != 'image' && $key != 'price'){
-                if($key == 'multiple'){
+            if($key !== 'product_id' && $key !== 'user_id' && $key !== 'quantity' && $key !== 'scope' && $key !== 'product' && $key !== 'image' && $key !== 'price'){
+                if($key === 'multiple'){
                     for($i = 0; $i < count($value); $i++){
                         array_push($modifiers_ids, $value[$i]);
                     }
                 } else {
-                    if($value != null)
+                    if($value){
                         array_push($modifiers_ids, $value);
+                    }
                 }
             }
         }
@@ -61,7 +62,7 @@ class ShoppingCartController extends Controller
         ]);
 
         for($i = 0; $i < count($modifiers_ids); $i++){
-            $modifier = Modifier::findOrFail($modifiers_ids[$i]);
+            $modifier = Modifier::find($modifiers_ids[$i]);
             $shoppingCart->modifiers()->attach(array([
                 'modifier_id' => $modifier->id,
                 'unit_price_modifier' => $modifier->price
@@ -81,7 +82,8 @@ class ShoppingCartController extends Controller
     {   
     }
 
-    public function showByUser($id){
+    public function showByUser($id)
+    {
         try {
             $user = User::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -90,7 +92,7 @@ class ShoppingCartController extends Controller
             ], 403);
         }
 
-        return ShoppingCart::select("shopping_cart.id", "quantity", "products.name as product", "products.price as price", "products.img as image")
+        return ShoppingCart::select("shopping_cart.id", "quantity", "name", "price", "img")
         ->join('products', 'shopping_cart.product_id', '=', 'products.id')->where('shopping_cart.user_id', '=', $id)
         ->get();
     }
